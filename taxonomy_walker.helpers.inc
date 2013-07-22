@@ -17,6 +17,14 @@ function _taxonomy_walker_field_value($field, $key = 'safe_value') {
   return false;
 }
 
+/* Specify a set of options, select one or more with a set of keys */
+function _taxonomy_walker_include_options($keys, $options) {
+  $result = array();
+  foreach($keys as $i => $key) {
+    $result[$key] = $options[$key];
+  }
+  return $result;
+}
 
 /* Load Questions and Answers for a given term */
 function taxonomy_walker_question_load($tid) {
@@ -63,7 +71,7 @@ function taxonomy_walker_term_content($term_id) {
   $content = array();
   $nodes = taxonomy_select_nodes($term_id);
   foreach($nodes as $index => $id) {
-    $content[$index] = node_view(node_load($id), 'full');
+    $content[$index] = node_view(node_load($id), 'teaser');
   }
   if(count($nodes) > 0) {
     user_cookie_save(array('product' => implode(',', $nodes)));

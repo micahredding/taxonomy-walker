@@ -14,37 +14,35 @@ function taxonomy_walker_menu() {
     'title' => 'Admin for Taxonomy Walker'
   );
 
-  $options = array(
-    'form_id' => 'support_matrix', 
-    'term_id' => 32, 
-    'type' => 'button', 
-    'include_buttons' => false, 
-    'terms_at_a_time' => 0,
-    '#attributes' => array('class' => array('taxonomy-walker-with-buttons', 'support-matrix'))
-  );
-
   $items['support'] = array(
     'page callback' => 'taxonomy_walker_multi_page_view',
-    'page arguments' => array($options),
+    'page arguments' => array(
+      array(
+        'form_id' => 'support_matrix', 
+        'term_id' => 32, 
+        'types' => array('button'), 
+        'include_buttons' => false, 
+        'terms_at_a_time' => 0,
+        '#attributes' => array('class' => array('taxonomy-walker-with-buttons', 'support-matrix'))
+      )      
+    ),
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
     'title' => 'Support Matrix'
   );
 
-  $options = array(
-    'form_id' => 'product_finder', 
-    'term_id' => 15, 
-    'type' => 'button', 
-    'types' => array('image_button'),
-    'include_buttons' => false, 
-    'include_restart_button' => true,
-    'terms_at_a_time' => 1,
-    '#attributes' => array('class' => array('taxonomy-walker-with-image-buttons', 'product-finder'))
-  );
-
   $items['product-finder'] = array(
     'page callback' => 'taxonomy_walker_multi_page_view',
-    'page arguments' => array($options),
+    'page arguments' => array(
+      array(
+        'form_id' => 'product_finder', 
+        'term_id' => 15, 
+        'types' => array('image_button', 'button'),
+        'include_buttons' => array('restart'),
+        'terms_at_a_time' => 1,
+        '#attributes' => array('class' => array('taxonomy-walker-with-image-buttons', 'product-finder'))
+      )      
+    ),
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
     'title' => 'Who Are You?'

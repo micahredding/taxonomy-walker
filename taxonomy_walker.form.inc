@@ -42,22 +42,11 @@ function taxonomy_walker_form($form, &$form_state, $options = array()) {
         break;
     }
   }
+  $options = _taxonomy_walker_form_defaults($options);
   return _taxonomy_walker_form($term_ids, $current_term_id, $options);
 }
 
 function _taxonomy_walker_form($term_ids, $current_term_id, $options) {
-  $default_options = array(
-    'type' => 'select',
-    'types' => array(),
-    'include_content' => true,
-    'include_buttons' => true,
-    'form_id' => 'taxonomy-walker-form',
-    'current_term_id' => $current_term_id,
-    'term_ids' => $term_ids,
-    'terms_at_a_time' => 0,
-    '#attributes' => array(),
-  );
-  $options = array_merge($default_options, $options);
   $options['ajax_wrapper'] = $options['form_id'];
 
   $form = array();
@@ -82,11 +71,7 @@ function _taxonomy_walker_form($term_ids, $current_term_id, $options) {
     $starting_point = 0;
   }
   for($i = $starting_point; $i < count($term_ids); $i++) {
-    if(count($options['types']) > 0 && isset($options['types'][$i])) {
-      $type = $options['types'][$i];
-    } else {      
-      $type = $options['type'];
-    }
+    $type = _taxonomy_walker_array_item($options['types'], $i);
     $term_id = $term_ids[$i];
     $answer = _taxonomy_walker_form_answer($term_id, $type, $options);
     if(count($answer) > 0) {
@@ -104,49 +89,19 @@ function _taxonomy_walker_form($term_ids, $current_term_id, $options) {
     );    
   }
 
-  if($options['include_buttons']) {
-    $form['back'] = array(
-      '#type' => 'submit',
-      '#value' => 'Back',
-      '#submit' => array('taxonomy_walker_form_back'),
-      '#ajax' => array(
-        'event' => 'click',
-        'callback' => 'taxonomy_walker_form_ajax_callback',
-        'wrapper' => $options['ajax_wrapper'],
-      ),
-    );
-    $form['submit'] = array(
-      '#type' => 'submit',
-      '#value' => 'Next',
-      '#submit' => array('taxonomy_walker_form_submit'),
-      '#ajax' => array(
-        'event' => 'click',
-        'callback' => 'taxonomy_walker_form_ajax_callback',
-        'wrapper' => $options['ajax_wrapper'],
-      ),
-    );    
-
-  }
-
-  if($options['include_restart_button'] || $options['include_buttons']) {
-    $form['start_over'] = array(
-      '#type' => 'submit',
-      '#value' => 'Start Over',
-      '#submit' => array('taxonomy_walker_form_restart'),
-      '#attributes' => array(
-        'class' => array(
-          'submit-restart',
-        ),
-      ),
-      '#ajax' => array(
-        'event' => 'click',
-        'callback' => 'taxonomy_walker_form_ajax_callback',
-        'wrapper' => $options['ajax_wrapper'],
-      ),
-    );
+  if($options) {
+    $buttons_source = _taxonomy_walker_form_buttons($options['ajax_wrapper']);
+    $buttons_select = _taxonomy_walker_include_options($options['include_buttons'], $buttons_source);
+    $form = array_merge($form, $buttons_select);
   }
 
   return $form;
+}
+
+function _taxonomy_walker_array_item($array, $i) {
+  $count = count($array);
+  $item = ($count > $i) ? $array[$i] : $array[$count - 1];
+  return $item;
 }
 
 function _taxonomy_walker_form_answer($tid, $type, $options) {
@@ -246,6 +201,64 @@ function _taxonomy_walker_form_answer($tid, $type, $options) {
   }
 
   return $answer;
+}
+
+
+function _taxonomy_walker_form_buttons($ajax_wrapper) {
+  $buttons = array(
+    'back' => array(
+      '#type' => 'submit',
+      '#value' => 'Back',
+      '#submit' => array('taxonomy_walker_form_back'),
+      '#ajax' => array(
+        'event' => 'click',
+        'callback' => 'taxonomy_walker_form_ajax_callback',
+        'wrapper' => $ajax_wrapper,
+      ),
+    ),
+    'submit' => array(
+      '#type' => 'submit',
+      '#value' => 'Next',
+      '#submit' => array('taxonomy_walker_form_submit'),
+      '#ajax' => array(
+        'event' => 'click',
+        'callback' => 'taxonomy_walker_form_ajax_callback',
+        'wrapper' => $ajax_wrapper,
+      ),
+    ),    
+    'restart' => array(
+      '#type' => 'submit',
+      '#value' => 'Start Over',
+      '#submit' => array('taxonomy_walker_form_restart'),
+      '#attributes' => array(
+        'class' => array(
+          'submit-restart',
+        ),
+      ),
+      '#ajax' => array(
+        'event' => 'click',
+        'callback' => 'taxonomy_walker_form_ajax_callback',
+        'wrapper' => $ajax_wrapper,
+      ),
+    ),    
+  );
+
+  return $buttons;
+}
+
+function _taxonomy_walker_form_defaults($options = array()) {
+  $default_options = array(
+    'type' => 'select',
+    'types' => array(),
+    'include_content' => true,
+    'include_buttons' => array('back','submit','restart'),
+    'form_id' => 'taxonomy-walker-form',
+    'current_term_id' => 0,
+    'term_ids' => array(0),
+    'terms_at_a_time' => 0,
+    '#attributes' => array(),
+  );
+  return array_merge($default_options, $options);
 }
 
 
