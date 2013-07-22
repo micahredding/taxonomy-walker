@@ -65,10 +65,9 @@ function _taxonomy_walker_form($term_ids, $current_term_id, $options) {
     '#value' => $term_ids,
   );
 
+  $starting_point = 0;
   if($options['terms_at_a_time'] > 0) {
     $starting_point = count($term_ids) - $options['terms_at_a_time'];
-  } else {
-    $starting_point = 0;
   }
   for($i = $starting_point; $i < count($term_ids); $i++) {
     $type = _taxonomy_walker_array_item($options['types'], $i);
@@ -81,13 +80,7 @@ function _taxonomy_walker_form($term_ids, $current_term_id, $options) {
     }
   }
 
-  if($options['include_content']) {
-    $form['content'] = array(
-      '#prefix' => '<div class="term-content">',
-      '#suffix' => '</div>',
-      'content' => taxonomy_walker_term_content($current_term_id),
-    );    
-  }
+  $form['content'] = taxonomy_walker_content($term_ids);
 
   if($options) {
     $buttons_source = _taxonomy_walker_form_buttons($options['ajax_wrapper']);
@@ -96,12 +89,6 @@ function _taxonomy_walker_form($term_ids, $current_term_id, $options) {
   }
 
   return $form;
-}
-
-function _taxonomy_walker_array_item($array, $i) {
-  $count = count($array);
-  $item = ($count > $i) ? $array[$i] : $array[$count - 1];
-  return $item;
 }
 
 function _taxonomy_walker_form_answer($tid, $type, $options) {
@@ -250,7 +237,6 @@ function _taxonomy_walker_form_defaults($options = array()) {
   $default_options = array(
     'type' => 'select',
     'types' => array(),
-    'include_content' => true,
     'include_buttons' => array('back','submit','restart'),
     'form_id' => 'taxonomy-walker-form',
     'current_term_id' => 0,

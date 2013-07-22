@@ -17,6 +17,13 @@ function _taxonomy_walker_field_value($field, $key = 'safe_value') {
   return false;
 }
 
+
+function _taxonomy_walker_array_item($array, $i) {
+  $count = count($array);
+  $item = ($count > $i) ? $array[$i] : $array[$count - 1];
+  return $item;
+}
+
 /* Specify a set of options, select one or more with a set of keys */
 function _taxonomy_walker_include_options($keys, $options) {
   $result = array();
@@ -72,9 +79,6 @@ function taxonomy_walker_term_content($term_id) {
   $nodes = taxonomy_select_nodes($term_id);
   foreach($nodes as $index => $id) {
     $content[$index] = node_view(node_load($id), 'teaser');
-  }
-  if(count($nodes) > 0) {
-    user_cookie_save(array('product' => implode(',', $nodes)));
   }
   return $content;
 }

@@ -4,7 +4,9 @@ include 'taxonomy_walker.admin.inc';
 include 'taxonomy_walker.variables.inc';
 include 'taxonomy_walker.helpers.inc';
 include 'taxonomy_walker.form.inc';
+include 'taxonomy_walker.content.inc';
 include 'taxonomy_walker.block.inc';
+include 'taxonomy_walker.api.inc';
 
 function taxonomy_walker_menu() {
   $items['admin/structure/taxonomy-walker'] = array(
@@ -14,44 +16,12 @@ function taxonomy_walker_menu() {
     'title' => 'Admin for Taxonomy Walker'
   );
 
-  $items['support'] = array(
-    'page callback' => 'taxonomy_walker_multi_page_view',
-    'page arguments' => array(
-      array(
-        'form_id' => 'support_matrix', 
-        'term_id' => 32, 
-        'types' => array('button'), 
-        'include_buttons' => false, 
-        'terms_at_a_time' => 0,
-        '#attributes' => array('class' => array('taxonomy-walker-with-buttons', 'support-matrix'))
-      )      
-    ),
-    'access callback' => TRUE,
-    'type' => MENU_CALLBACK,
-    'title' => 'Support Matrix'
-  );
-
-  $items['product-finder'] = array(
-    'page callback' => 'taxonomy_walker_multi_page_view',
-    'page arguments' => array(
-      array(
-        'form_id' => 'product_finder', 
-        'term_id' => 15, 
-        'types' => array('image_button', 'button'),
-        'include_buttons' => array('restart'),
-        'terms_at_a_time' => 1,
-        '#attributes' => array('class' => array('taxonomy-walker-with-image-buttons', 'product-finder'))
-      )      
-    ),
-    'access callback' => TRUE,
-    'type' => MENU_CALLBACK,
-    'title' => 'Who Are You?'
-  );
-
-
   return $items;
 }
 
-function taxonomy_walker_multi_page_view($options = array()) {
+function taxonomy_walker_term_view($options = array()) {
   return drupal_get_form('taxonomy_walker_form', $options);  
+}
+function taxonomy_walker_content_view($options = array()) {
+  return drupal_get_form('taxonomy_walker_content_form', $options);  
 }
