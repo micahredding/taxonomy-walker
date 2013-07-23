@@ -83,18 +83,17 @@ function _taxonomy_walker_form_questions($term_ids, $current_term_id, $options) 
     /* If we have answers left to offer, it spits out the question and answers.
        Otherwise, it gives us the results */
     if($question) {
+      if($question['buttons']) {
+        $buttons = array_merge($buttons, $question['buttons']);
+        unset($question['buttons']);
+      }
       $questions[$term_ids[$i]] = $question;
     } else {
       taxonomy_walker_set_content($current_term_id);
-      $buttons[] = 'results';
       $questions[$term_ids[$i]]['content'] = taxonomy_walker_content($current_term_id);
     }
-
-    if($buttons !== array()) {
-      $questions[$term_ids[$i]]['buttons'] = _taxonomy_walker_form_buttons($buttons, $options);
-    }
+    $questions[$term_ids[$i]]['buttons'] = _taxonomy_walker_form_buttons($buttons, $options);
   }
-
   return $questions;  
 }
 
@@ -192,17 +191,7 @@ function _taxonomy_walker_form_question($tid, $type, $options) {
         '#type' => 'checkboxes',
         '#options' => $answers,
       );
-      $answer['results'] = array(
-        '#type' => 'submit',
-        '#value' => 'Continue to results...',
-        '#submit' => array('taxonomy_walker_form_results'),
-        '#attributes' => array(
-          'class' => array(
-            'submit-results',
-            'buttons',
-          ),
-        ),
-      );
+      $answer['buttons'] = array('results');
       break;        
     case 'select':
     default:
@@ -250,6 +239,17 @@ function _taxonomy_walker_form_buttons($buttons, $options) {
         'wrapper' => $options['ajax_wrapper'],
       ),
     ),    
+    'results' => array(
+      '#type' => 'submit',
+      '#value' => 'Continue to results...',
+      '#submit' => array('taxonomy_walker_form_results'),
+      '#attributes' => array(
+        'class' => array(
+          'submit-results',
+          'buttons',
+        ),
+      ),
+    ),
     'restart' => array(
       '#type' => 'submit',
       '#value' => 'Start Over',
